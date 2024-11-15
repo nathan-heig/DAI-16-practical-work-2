@@ -14,13 +14,13 @@ public class Client implements Callable<Integer> {
 
     private static final String HOST = "localhost";
     private static final int PORT = 1234;
-    private Socket socket;
-    private BufferedReader in;
-    private BufferedWriter out;
+    private static Socket socket;
+    private static BufferedReader in;
+    private static BufferedWriter out;
 
 
 
-    public void connect(){
+    private static void Login(){
             while(true){
                 System.out.print("Entrez votre pseudo : ");
                 String pseudo = System.console().readLine();
@@ -38,6 +38,21 @@ public class Client implements Callable<Integer> {
                 }
             }
     }
+    private static void createRoom(){
+        System.out.print("Entrez le nom de la salle : ");
+        String roomName = System.console().readLine();
+        System.out.print("Entrez le mot de passe de la salle : ");
+        String password = System.console().readLine();
+        Utils.send(Utils.Command.CREATE_ROOM + " " + roomName + " " + password, out);
+        Utils.Response response = Utils.getResponse(in);
+        if(response == Utils.Response.OK){
+            System.out.println("Salle créée");
+        }
+        else{
+            System.out.println("Création de salle échouée : " + response);
+        }
+    }
+    
 
 
     @Override
@@ -45,7 +60,8 @@ public class Client implements Callable<Integer> {
         socket = new Socket(HOST, PORT);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        connect();
+        Login();
+        createRoom();
 
 
         return 0;

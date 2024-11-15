@@ -26,6 +26,14 @@ public class Server implements Callable<Integer> {
             e.printStackTrace();
         }
     }
+    private Boolean checkLogged(String userLogin, BufferedWriter out) {
+        if (userLogin == null) {
+            Utils.send(Utils.Response.CLIENT_NOT_LOGGED, out);
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public Integer call() throws Exception {
@@ -37,10 +45,10 @@ public class Server implements Callable<Integer> {
                      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
 
+                    String userLogin = null;
                     while(clientSocket.isConnected()){
                         String request = Utils.readUntil(in);
                         String[] parts = request.split(Utils.splitter,2);
-                        String userLogin;
                         
                         Utils.Command command = Utils.Command.fromString(parts[0]);
                         if (command == null) {
@@ -79,6 +87,7 @@ public class Server implements Callable<Integer> {
                                 }
                             }
                             case CREATE_ROOM -> {
+                                if (!checkLogged(userLogin, out)) {break;}
                                 String[] roomData = parts[1].split(Utils.splitter, 2);
                                 String roomName = roomData[0];
                                 String roomPassword = roomData[1];

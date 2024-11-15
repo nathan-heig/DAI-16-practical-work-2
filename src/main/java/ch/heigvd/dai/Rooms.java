@@ -26,24 +26,25 @@ public class Rooms {
         }
         return false;
     }
-    public static void createRoom(String roomName, String roomPassword, String CreatorName) {
+    
+    public static Boolean createRoom(String roomName, String roomPassword, String CreatorName) {
         File room = new File(roomLocation + "/" + roomName);
         if (!room.exists()) {
             try {
                 room.createNewFile();
                 try (java.io.BufferedWriter bw = new BufferedWriter(new FileWriter(room));){
                     bw.write(roomPassword);
+                    return true;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 room.delete();
+                return false;
             }
-            
-        } else {
-            System.out.println("La salle existe déjà.");
         }
+        System.out.println("La salle existe déjà.");
+        return false;
     }
-
 }
