@@ -26,8 +26,8 @@ public class Server implements Callable<Integer> {
             e.printStackTrace();
         }
     }
-    private Boolean checkLogged(String userLogin, BufferedWriter out) {
-        if (userLogin == null) {
+    private Boolean checkLogged(String Login, BufferedWriter out) {
+        if (Login == null) {
             Utils.send(Utils.Response.CLIENT_NOT_LOGGED, out);
             return false;
         }
@@ -46,6 +46,7 @@ public class Server implements Callable<Integer> {
                      BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
 
                     String userLogin = null;
+                    String roomLogin = null;
                     while(clientSocket.isConnected()){
                         String request = Utils.readUntil(in);
                         String[] parts = request.split(Utils.splitter,2);
@@ -86,16 +87,39 @@ public class Server implements Callable<Integer> {
                                     userLogin = login;
                                 }
                             }
-                            case CREATE_ROOM -> {
+                            case REGISTER_ROOM -> {
+                                if (!checkLogged(userLogin, out)) {break;}
+                                String[] roomData = parts[1].split(Utils.splitter, 2);
+                                String roomName = roomData[0];
+                                String roomPassword = roomData[1];
+                                
+                                if (Rooms.exist(roomName))
+                                    Utils.send(Utils.Response.ROOM_ALREADY_EXISTS, out);
+                                else
+                                    if (Rooms.createRoom(roomName, roomPassword, userLogin)){
+                                        Utils.send(Utils.Response.OK, out);
+                                        roomLogin = roomName;
+                                    } else
+                                        Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                            }
+                            case LOGIN_ROOM -> {
                                 if (!checkLogged(userLogin, out)) {break;}
                                 String[] roomData = parts[1].split(Utils.splitter, 2);
                                 String roomName = roomData[0];
                                 String roomPassword = roomData[1];
                                 if (Rooms.exist(roomName)) {
-                                    Utils.send(Utils.Response.ROOM_ALREADY_EXISTS, out);
+                                    try (BufferedReader roomReader = new BufferedReader(new FileReader(Rooms.roomLocation + "/" + roomName))) {
+                                        if (roomPassword.equals(roomReader.readLine())) {
+                                            Utils.send(Utils.Response.OK, out);
+                                            roomLogin = roomName;
+                                        } else {
+                                            Utils.send(Utils.Response.INVALID_PASSWORD, out);
+                                        }
+                                    } catch (IOException e) {
+                                        Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                                    }
                                 } else {
-                                    Rooms.createRoom(roomName, roomPassword, userLogin);
-                                    Utils.send(Utils.Response.OK, out);
+                                    Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
                                 }
                             }
                         }

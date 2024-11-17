@@ -43,7 +43,7 @@ public class Client implements Callable<Integer> {
         String roomName = System.console().readLine();
         System.out.print("Entrez le mot de passe de la salle : ");
         String password = System.console().readLine();
-        Utils.send(Utils.Command.CREATE_ROOM + " " + roomName + " " + password, out);
+        Utils.send(Utils.Command.REGISTER_ROOM + " " + roomName + " " + password, out);
         Utils.Response response = Utils.getResponse(in);
         if(response == Utils.Response.OK){
             System.out.println("Salle créée");

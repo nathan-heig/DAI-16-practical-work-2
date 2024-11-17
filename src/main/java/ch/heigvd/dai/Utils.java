@@ -11,7 +11,7 @@ public class Utils {
         LOGIN,
         REGISTER,
         LOGIN_ROOM,
-        CREATE_ROOM;
+        REGISTER_ROOM;
 
 
         public static Command fromString(String command){
@@ -27,7 +27,7 @@ public class Utils {
         OK,
         CLIENT_NOT_LOGGED,
         INVALID_LOGIN,
-        INVALID_ROOMNAME,
+        INVALID_ROOM_NAME,
         INVALID_PASSWORD,
         USER_ALREADY_EXISTS,
         ROOM_ALREADY_EXISTS;
