@@ -59,7 +59,7 @@ public class Server implements Callable<Integer> {
                         }
                         
                         switch (command) {
-                            case LOGIN -> {
+                            case LOGIN_USER -> {
                                 String[] credentials = parts[1].split(Utils.splitter, 2);
                                 String login = credentials[0];
                                 String password = credentials[1];
@@ -75,7 +75,7 @@ public class Server implements Callable<Integer> {
                                     Utils.send(Utils.Response.INVALID_LOGIN, out);
                                 }
                             }
-                            case REGISTER -> {
+                            case REGISTER_USER -> {
                                 String[] credentials = parts[1].split(Utils.splitter, 2);
                                 String login = credentials[0];
                                 String password = credentials[1];
@@ -121,6 +121,20 @@ public class Server implements Callable<Integer> {
                                 } else {
                                     Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
                                 }
+                            }
+                            case WRITE_MESSAGE -> {
+                                if (!checkLogged(userLogin, out) || !checkLogged(roomLogin, out)) {break;}
+                                String message = parts[1];
+                                try (BufferedWriter roomWriter = new BufferedWriter(new FileWriter(Rooms.roomLocation + "/" + roomLogin, true))) {
+                                    roomWriter.write(userLogin + ": " + message + "\n");
+                                    Utils.send(Utils.Response.OK, out);
+                                } catch (IOException e) {
+                                    Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                                }
+                            }
+                            case QUIT -> {
+                                users.save();
+                                break;
                             }
                         }
                     }

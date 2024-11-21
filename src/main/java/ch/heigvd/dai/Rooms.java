@@ -5,15 +5,14 @@ import java.io.*;
 
 public class Rooms {
     public static final String roomLocation = "rooms";
+    public static final String splitter = ":";
 
     public static String[] getRoomsName() {
         File folder = new File(roomLocation);
         if (folder.exists() && folder.isDirectory()) {
             return folder.list();
-        } else {
-            System.out.println("Le dossier spécifié n'existe pas ou n'est pas un dossier.");
-            return null;
         }
+        return null;
     }
     public static Boolean exist(String roomName) {
        String[] rooms = getRoomsName();
@@ -32,7 +31,7 @@ public class Rooms {
         try {
             room.createNewFile();
             try (java.io.BufferedWriter writer = new BufferedWriter(new FileWriter(room));){
-                writer.write(roomPassword);
+                writer.write(roomPassword + splitter + CreatorName + "\n");
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();

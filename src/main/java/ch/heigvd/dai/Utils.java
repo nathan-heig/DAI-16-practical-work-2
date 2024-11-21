@@ -8,10 +8,12 @@ public class Utils {
     public static final char delimiter = '\n';
 
     public static enum Command {
-        LOGIN,
-        REGISTER,
+        LOGIN_USER,
+        REGISTER_USER,
         LOGIN_ROOM,
-        REGISTER_ROOM;
+        REGISTER_ROOM,
+        WRITE_MESSAGE,
+        QUIT;
 
 
         public static Command fromString(String command){
