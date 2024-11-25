@@ -11,7 +11,15 @@ import picocli.CommandLine;
         },
         scope = CommandLine.ScopeType.INHERIT,
         mixinStandardHelpOptions = true)
+
+
 public class Root {
-        public String endOfLine = "\n";
+
+        @CommandLine.Parameters(index = "1", description = "The port for the room.")
+        private int port = 1234;
+
+        public int getPort(){
+                return port;
+        }
 
 }
