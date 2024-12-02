@@ -12,8 +12,15 @@ public class Client implements Callable<Integer> {
     @CommandLine.ParentCommand
     protected Root parent;
 
-    private static final String HOST = "localhost";
-    private static final int PORT = 1234;
+    @CommandLine.Option(
+            names = {"-a", "--address"},
+            description = "The IP address.",
+            required = false)
+    private String ipAddr = "localhost";
+
+
+    private final String HOST = ipAddr;
+    private final int PORT = parent.getPort();
     private static Socket socket;
     private static BufferedReader in;
     private static BufferedWriter out;

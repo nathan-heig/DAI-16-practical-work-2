@@ -11,6 +11,16 @@ import picocli.CommandLine;
         },
         scope = CommandLine.ScopeType.INHERIT,
         mixinStandardHelpOptions = true)
-public class Root {
 
+
+public class Root {
+        @CommandLine.Option(
+                names = {"-p", "--port"},
+                description = "The port for the room.",
+                required = false)
+        private int port = 1234;
+
+        public int getPort(){
+                return port;
+        }
 }
