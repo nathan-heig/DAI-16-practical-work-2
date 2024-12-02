@@ -16,7 +16,7 @@ public class Server implements Callable<Integer> {
     @CommandLine.ParentCommand
     protected Root parent;
 
-    private final int PORT = parent.getPort();
+    private final int PORT = 1234;
     private static Users users = new Users().loadUsers();
 
     private void disconnectClient(Socket socket) {
