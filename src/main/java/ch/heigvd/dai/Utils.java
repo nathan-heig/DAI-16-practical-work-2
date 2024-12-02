@@ -5,7 +5,7 @@ import java.io.*;
 public class Utils {
 
     public static final String splitter = " ";
-    public static final char delimiter = '\n';
+    public static final char delimiter = '\u0004';
 
     public static enum Command {
         LOGIN_USER,
@@ -69,10 +69,10 @@ public class Utils {
     }
 
     public static String readUntil(BufferedReader in) throws IOException {
-        String response = "";
+        StringBuffer response = new StringBuffer();
         int c;
         while ((c = in.read()) != -1 && ((char)c) != delimiter) {
-            response += ((char) c);
+            response.append((char) c);
         }
         return response.toString();
     }
