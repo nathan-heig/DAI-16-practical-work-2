@@ -1,9 +1,12 @@
 # DAI-07-practical-work-1
 
-### Programme de cryptage.  
-Le programme conçu lors de ce labo permet d'encrypter de de décrypter 
-des fichiers texts à l'aide d'une clé, cette dernière pouvant également
-être crée grâce à notre programme.
+### Programme de Chat par ROOMS.  
+Le programme conçu lors de ce labo permet la discussion au travers de différentes ROOM.
+Chaque utilisateur peut se créer un compte avec un nom et un mdp afin de pouvoir ce reconnecter par la suite.
+Ensuite, chaque personne peut créer une ROOM, elle doit être initialisée avec son nom et un mdp, ceux-ci permettrons de s'y connecter.
+Chaque utilisateur à donc la possibilité de se connecté à une ROOM dont il connait le nom et le mdp afin de pouvoir y écrire des messages.
+Si un ou plusieurs autre(s) utilisateur(s) est/sont connecté(s) à la même ROOM, chacun pourra voir les messages écrits dans la ROOM.
+Un historique des discussions de chaque ROOM est save afin de pouvoir réaccéder à une discussion.
 
 ### Comment utiliser le programme ?  
 Différentes commandes sont disponibles, voici un exemple ainsi que le résultat obtenu.  
