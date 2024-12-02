@@ -15,7 +15,10 @@ import picocli.CommandLine;
 
 public class Root {
 
-        @CommandLine.Parameters(index = "1", description = "The port for the room.")
+        @CommandLine.Option(
+                names = {"-p", "--port"},
+                description = "The port for the room.",
+                required = false)
         private int port = 1234;
 
         public int getPort(){
