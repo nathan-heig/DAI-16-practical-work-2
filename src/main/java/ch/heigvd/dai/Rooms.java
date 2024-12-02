@@ -25,9 +25,12 @@ public class Rooms {
         }
         return false;
     }
+    private static String getRoomPath(String roomName) {
+        return roomLocation + "/" + roomName;
+    }
 
     public static Boolean createRoom(String roomName, String roomPassword, String CreatorName) {
-        File room = new File(roomLocation + "/" + roomName);
+        File room = new File(getRoomPath(roomName));
         try {
             room.createNewFile();
             try (java.io.BufferedWriter writer = new BufferedWriter(new FileWriter(room));){
@@ -42,5 +45,24 @@ public class Rooms {
             room.delete();
         }
         return false;
+    }
+
+    public static Boolean checkPassword(String roomName, String roomPassword) {
+        try (BufferedReader roomReader = new BufferedReader(new FileReader(getRoomPath(roomName)));) {
+            return roomPassword.equals(roomReader.readLine());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static Boolean addMessage(String roomName, String writer, String message) {
+        try (BufferedWriter roomWriter = new BufferedWriter(new FileWriter(getRoomPath(roomName), true))){
+            roomWriter.write(writer + ":" +message + "\n");
+            return true;
+        } catch (Exception e) {
+            System.out.println("Impossible d'écrire dans la salle :" + e.toString());
+            return false;
+        }
     }
 }

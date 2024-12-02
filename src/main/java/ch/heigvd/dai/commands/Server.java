@@ -19,7 +19,7 @@ public class Server implements Callable<Integer> {
     private static final int PORT = 1234;
     private static Users users = new Users().loadUsers();
 
-    private void deconectClient(Socket socket) {
+    private void disconnectClient(Socket socket) {
         try {
             socket.close();
         } catch (IOException e) {
@@ -47,14 +47,14 @@ public class Server implements Callable<Integer> {
 
                     String userLogin = null;
                     String roomLogin = null;
-                    while(clientSocket.isConnected()){
+                    while(!clientSocket.isClosed()){
                         String request = Utils.readUntil(in);
                         String[] parts = request.split(Utils.splitter,2);
                         
                         Utils.Command command = Utils.Command.fromString(parts[0]);
                         if (command == null) {
                             System.out.println("Commande inconnue : " + parts[0]);
-                            deconectClient(clientSocket);
+                            disconnectClient(clientSocket);
                             break;
                         }
                         
@@ -125,11 +125,10 @@ public class Server implements Callable<Integer> {
                             case WRITE_MESSAGE -> {
                                 if (!checkLogged(userLogin, out) || !checkLogged(roomLogin, out)) {break;}
                                 String message = parts[1];
-                                try (BufferedWriter roomWriter = new BufferedWriter(new FileWriter(Rooms.roomLocation + "/" + roomLogin, true))) {
-                                    roomWriter.write(userLogin + ": " + message + "\n");
+                                if (Rooms.addMessage(roomLogin, userLogin, message)) {
                                     Utils.send(Utils.Response.OK, out);
-                                } catch (IOException e) {
-                                    Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                                } else {
+                                    Utils.send(Utils.Response.ERROR, out);
                                 }
                             }
                             case QUIT -> {

@@ -32,7 +32,8 @@ public class Utils {
         INVALID_ROOM_NAME,
         INVALID_PASSWORD,
         USER_ALREADY_EXISTS,
-        ROOM_ALREADY_EXISTS;
+        ROOM_ALREADY_EXISTS,
+        ERROR;
 
         public static Response fromString(String response){
             try {

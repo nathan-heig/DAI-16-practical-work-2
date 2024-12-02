@@ -12,6 +12,5 @@ import picocli.CommandLine;
         scope = CommandLine.ScopeType.INHERIT,
         mixinStandardHelpOptions = true)
 public class Root {
-        public String endOfLine = "\n";
 
 }
