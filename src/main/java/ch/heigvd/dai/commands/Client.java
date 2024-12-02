@@ -20,7 +20,7 @@ public class Client implements Callable<Integer> {
 
 
     private final String HOST = ipAddr;
-    private final int PORT = parent.getPort();
+    private final int PORT = 1234;
     private static Socket socket;
     private static BufferedReader in;
     private static BufferedWriter out;
@@ -100,8 +100,45 @@ public class Client implements Callable<Integer> {
             }
             System.out.println("Erreur lors de la connexion : " + response);
         }
-
-
-        return 0;
+        while(true){
+            System.out.println("1. Se connecter à une salle\n2. Créer une salle\n3. Quitter");
+            Integer command = Integer.parseInt(System.console().readLine());
+            switch (command) {
+                case 1 -> {
+                    response = loginRoom();
+                }
+                case 2 -> {
+                    response = registerRoom();
+                }
+                case 3 -> {
+                    Utils.send(Utils.Command.QUIT.toString(), out);
+                    return 0;
+                }
+            }
+            if (response == Utils.Response.OK) {
+                System.out.println("Vous êtes connecté à une salle");
+                break;
+            }
+            System.out.println("Erreur lors de la connexion à la salle : " + response);
+        }
+        while(true){
+            System.out.println("1. Envoyer un message\n2. Quitter");
+            Integer command = Integer.parseInt(System.console().readLine());
+            switch (command) {
+                case 1 -> {
+                    response = sendMessage();
+                }
+                case 2 -> {
+                    Utils.send(Utils.Command.QUIT.toString(), out);
+                    return 0;
+                }
+            }
+            if (response == Utils.Response.OK) {
+                System.out.println("Message envoyé");
+            }
+            else {
+                System.out.println("Erreur lors de l'envoi du message : " + response);
+            }
+        }
     }
 }
