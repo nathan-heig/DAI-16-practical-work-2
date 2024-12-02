@@ -9,16 +9,47 @@ Si un ou plusieurs autre(s) utilisateur(s) est/sont connecté(s) à la même ROO
 Un historique des discussions de chaque ROOM est save afin de pouvoir réaccéder à une discussion.
 
 ### Comment utiliser le programme ?  
-Différentes commandes sont disponibles, voici un exemple ainsi que le résultat obtenu.  
-Nous partons du principe que nous avons un fichier test.txt et que c'est ce dernier qui 
-doit être encrypté. Nous allons utiliser l'algorithme AES pour ce faire.
+Côté server :
 
-| Exemple de commandes                                                                  | Utilité               | Fichier crée     | Contenu du fichier  |
-|---------------------------------------------------------------------------------------|-----------------------|------------------|---------------------|
-| java -jar .\target\pratical_work_01-1.0-SNAPSHOT.jar -a AES test.key createKey -l 128 | Création d'une clé    | test.key         | o+U9NaN8zUEajdfuidyp/Q==  |
-| java -jar .\target\pratical_work_01-1.0-SNAPSHOT.jar -a AES test.txt encrypt -k test.key  | Encryptage du fichier | test.txt.enc     | ��N�_�}�#[�с��نj ��'�˘=�Ь  |
-| java -jar .\target\pratical_work_01-1.0-SNAPSHOT.jar -a AES test.txt.enc decrypt -k test.key| Décryptage du fichier | test.txt.enc.dec | ceci est un test.  |
+| Exemple de commandes                                                | Utilité                              |
+|---------------------------------------------------------------------|--------------------------------------|
+| java -jar .\target\pratical_work_02-1.0-SNAPSHOT.jar server -p 2345 | ouverture du server sur le port 2345 |
+| java -jar .\target\pratical_work_02-1.0-SNAPSHOT.jar server         | ouverture du server sur le port 1234 |
+
+Côté client :
+
+| Exemple de commandes                                                                         | Utilité                                                            |
+|----------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| java -jar .\target\pratical_work_02-1.0-SNAPSHOT.jar client -p 2345 -a 192.54.97.0           | connexion du client sur le port 2345 avec l'adresse IP 192.54.97.0 |
+| java -jar .\target\pratical_work_01-1.0-SNAPSHOT.jar client                                  | connexion du client sur le port 1234 avec l'adresse IP localhost   |
+
+Le client peut ensuite lancer plusieurs commandes :
+
+Première selection :
+
+| Exemple de commandes | Utilité                                   |
+|----------------------|-------------------------------------------|
+| 1                    | le client se login au server (nom et mdp) |
+| 2                    | le client se register (nom et mdp)        |
+| 3                    | le client se déconnecte                   |
   
+Deuxième selection
+
+| Exemple de commandes | Utilité                |
+|----------------------|------------------------|
+| 1                    | connexion à une ROOM   |
+| 2                    | création de ROOM       |
+| 3                    | le client se déconnecte |
+
+Troisième selection
+
+| Exemple de commandes | Utilité                    |
+|----------------------|----------------------------|
+| 1                    | le client écrit un message |
+| 2                    | le client lit un message   |
+| 3                    | le client quitte la ROOM   |
+
+
 ### Comment clone et build le projet ?  
 Pour ce faire, il suffit d'utiliser la commande git clone git@github.com:BKo1706/DAI-07-practical-work-1.git et le projet sera cloner.  
 Pour build l'application, il faut utiliser la commande ./mvnw package.
