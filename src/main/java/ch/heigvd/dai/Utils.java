@@ -26,25 +26,6 @@ public class Utils {
             return null;
         }
     }
-    public static enum Response {
-        OK,
-        CLIENT_NOT_LOGGED,
-        INVALID_LOGIN,
-        INVALID_ROOM_NAME,
-        INVALID_PASSWORD,
-        USER_ALREADY_EXISTS,
-        ROOM_ALREADY_EXISTS,
-        ERROR;
-
-        public static Response fromString(String response){
-            try {
-                return Response.valueOf(response);
-            } catch (Exception e) {
-                System.out.println(e.toString());
-            }
-            return null;
-        }
-    }
 
     public static int send(BufferedWriter out, String ... messages){
         try {
@@ -62,13 +43,10 @@ public class Utils {
         }
         return 1;
     } 
-    public static int send(Response response, BufferedWriter out){
-        return send(out, response.toString());
-    }
 
-    public static Response getResponse(BufferedReader in){
+    public static String getResponse(BufferedReader in){
         try {
-            return Response.fromString(readUntil(in));
+            return readUntil(in);
         } catch (IOException e) {
             System.out.println(e.toString());
         }

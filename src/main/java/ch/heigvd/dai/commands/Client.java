@@ -2,7 +2,6 @@ package ch.heigvd.dai.commands;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import ch.heigvd.dai.Utils;
@@ -27,14 +26,17 @@ public class Client implements Callable<Integer> {
     private static BufferedWriter out;
 
 
-    private static Utils.Response loginRoom(){
+    private static String loginRoom(){
         return login(Utils.Command.LOGIN_ROOM);
     }
-    private static Utils.Response loginUser(){
+    private static String loginUser(){
         return login(Utils.Command.LOGIN_USER);
     }
+    private static Boolean isGoodRep(String rep){
+        return rep.equals(Server.Response.OK.toString());
+    }
 
-    private static Utils.Response login(Utils.Command command){
+    private static String login(Utils.Command command){
         System.out.print("Entrez le " + command + " : ");
         String pseudo = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
@@ -44,14 +46,14 @@ public class Client implements Callable<Integer> {
         return Utils.getResponse(in);
     }
 
-    private static Utils.Response registerRoom(){
+    private static String registerRoom(){
         return register(Utils.Command.REGISTER_ROOM);
     }
-    private static Utils.Response registerUser(){
+    private static String registerUser(){
         return register(Utils.Command.REGISTER_USER);
     }
 
-    private static Utils.Response register(Utils.Command command){
+    private static String register(Utils.Command command){
         System.out.print("Entrez le nom : ");
         String name = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
@@ -60,7 +62,7 @@ public class Client implements Callable<Integer> {
         return Utils.getResponse(in);
     }
 
-    private static Utils.Response sendMessage(){
+    private static String sendMessage(){
         System.out.print("Entrez le message : ");
         String message = System.console().readLine();
         Utils.send(out, Utils.Command.WRITE_MESSAGE + " " + message);
@@ -79,7 +81,7 @@ public class Client implements Callable<Integer> {
         System.out.println("Bienvenue sur le client de messagerie");
         System.out.println("Veuillez vous connecter ou vous inscrire à un user");
         
-        Utils.Response response = null;
+        String response = null;
         while(true){
             System.out.println("1. Se connecter\n2. S'inscrire\n3. Quitter");
             Integer command = Integer.parseInt(System.console().readLine());
@@ -95,7 +97,7 @@ public class Client implements Callable<Integer> {
                     return 0;
                 }
             }
-            if (response == Utils.Response.OK) {
+            if (response.equals(Server.Response.OK.toString())) {
                 System.out.println("Vous êtes connecté");
                 break;
             }
@@ -116,11 +118,11 @@ public class Client implements Callable<Integer> {
                     return 0;
                 }
             }
-            if (response == Utils.Response.OK) {
+            if (isGoodRep(response)) {
                 System.out.println("Vous êtes connecté à une salle");
                 break;
             }
-            System.out.println("Erreur lors de la connexion à la salle : " + response);
+            System.out.println(response);
         }
         while(true){
             System.out.println("1. Envoyer un message\n2. Quitter");
@@ -134,11 +136,11 @@ public class Client implements Callable<Integer> {
                     return 0;
                 }
             }
-            if (response == Utils.Response.OK) {
+            if (isGoodRep(response)) {
                 System.out.println("Message envoyé");
             }
             else {
-                System.out.println("Erreur lors de l'envoi du message : " + response);
+                System.out.println(response);
             }
         }
     }
