@@ -9,11 +9,14 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
-    private static Users users = new Users().loadUsers();
+    private final Users users;
+    private final Rooms rooms;
 
 
-    public ClientHandler(Socket clientSocket){
+    public ClientHandler(Socket clientSocket, Users users, Rooms rooms){
         this.clientSocket = clientSocket;
+        this.users = users;
+        this.rooms = rooms;
     }
     public static enum Response {
         OK,
@@ -27,8 +30,8 @@ public class ClientHandler implements Runnable{
         Utils.send(out, Response.ERROR.toString(), message);
     }
 
-    private Boolean checkLogged(String Login, BufferedWriter out) {
-        if (Login == null) {
+    private Boolean checkLogged(Object o, BufferedWriter out) {
+        if (o == null) {
             badResponse(out, "Vous n'êtes pas connecté");
             return false;
         }
@@ -39,8 +42,8 @@ public class ClientHandler implements Runnable{
     public void run(){
         try( BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))){
-            String userLogin = null;
-            String roomLogin = null;
+            User userLogin = null;
+            Room roomLogged = null;
             while(!clientSocket.isClosed()){
                 String request = Utils.readUntil(in);
                 String[] parts = request.split(Utils.splitter,2);
@@ -55,11 +58,12 @@ public class ClientHandler implements Runnable{
                         String[] credentials = parts[1].split(Utils.splitter, 2);
                         String login = credentials[0];
                         String password = credentials[1];
+                        User user = users.find(login);
                         
-                        if (users.containsKey(login)) {
-                            if (users.get(login).equals(password)) {
+                        if (user != null) {
+                            if (user.getPassword().equals(password)){
                                 goodResponse(out);
-                                userLogin = login;
+                                userLogin = user;
                             }
                             else {
                                 badResponse(out, "Invalid password");
@@ -72,27 +76,31 @@ public class ClientHandler implements Runnable{
                         String[] credentials = parts[1].split(Utils.splitter, 2);
                         String login = credentials[0];
                         String password = credentials[1];
+                        User user = users.find(login);
                         
-                        if (users.containsKey(login)) {
+                        if (user != null) {
                             badResponse(out, "User already exists");
                         } else {
-                            users.put(login, password);
+                            User newUser = new User(login, password);
+                            users.add(newUser);
                             goodResponse(out);
-                            userLogin = login;
+                            userLogin = newUser;
                         }
                     }
                     case REGISTER_ROOM -> {
                         if (!checkLogged(userLogin, out)) {break;}
                         String[] roomData = parts[1].split(Utils.splitter, 2);
-                        String roomName = roomData[0];
-                        String roomPassword = roomData[1];
+                        String name = roomData[0];
+                        String password = roomData[1];
+                        Room room = rooms.find(name);
                         
-                        if (Rooms.exist(roomName)){
+                        if (room != null) {
                             badResponse(out, "Room already exists");
                         } else {
-                            if (Rooms.createRoom(roomName, roomPassword, userLogin)){
+                            Room newRoom = new Room(name, password);
+                            if (rooms.add(newRoom)){
                                 goodResponse(out);
-                                roomLogin = roomName;
+                                roomLogged = newRoom;
                             } else{
                                 badResponse(out, "Impossible de créer la salle");
                             }
@@ -101,13 +109,14 @@ public class ClientHandler implements Runnable{
                     case LOGIN_ROOM -> {
                         if (!checkLogged(userLogin, out)) {break;}
                         String[] roomData = parts[1].split(Utils.splitter, 2);
-                        String roomName = roomData[0];
-                        String roomPassword = roomData[1];
-                        
-                        if (Rooms.exist(roomName)) {
-                            if (Rooms.checkPassword(roomName, roomPassword)) {
+                        String name = roomData[0];
+                        String password = roomData[1];
+
+                        Room room = rooms.find(name);
+                        if (room != null) {
+                            if (room.getPassword().equals(password)) {
                                 goodResponse(out);
-                                roomLogin = roomName;
+                                roomLogged = room;
                             } else {
                                 badResponse(out, "Invalid password");
                             }
@@ -116,26 +125,25 @@ public class ClientHandler implements Runnable{
                         }
                     }
                     case WRITE_MESSAGE -> {
-                        if (!checkLogged(userLogin, out) || !checkLogged(roomLogin, out)) {break;}
+                        if (!checkLogged(userLogin, out) || !checkLogged(roomLogged, out)) {break;}
                         String message = parts[1];
-                        if (Rooms.addMessage(roomLogin, userLogin, message)) {
+                        if (roomLogged.addMessage(userLogin.getLogin(), message)) {
                             goodResponse(out);
                         } else {
                             badResponse(out, "Impossible d'ajouter le message");
                         }
                     }
                     case GET_MESSAGES -> {
-                        if (!checkLogged(userLogin, out) || !checkLogged(roomLogin, out)) {break;}
+                        if (!checkLogged(userLogin, out) || !checkLogged(roomLogged, out)) {break;}
                         try {
                             int firstLine = Integer.parseInt(parts[1]);
-                            ArrayList<String> messages = Rooms.getMessages(roomLogin, firstLine);
+                            ArrayList<String> messages = roomLogged.getMessages(firstLine);
                             Utils.send(out, messages.toArray(new String[0]));
                         } catch (NumberFormatException e) {
                             badResponse(out, "Invalid line number");
                         }
                     }
                     case QUIT -> {
-                        users.save();
                         break;
                     }
                 }
