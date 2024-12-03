@@ -5,7 +5,7 @@ import java.io.*;
 public class Utils {
 
     public static final String splitter = " ";
-    public static final char delimiter = '\n';
+    public static final char delimiter = '\u0004';
 
     public static enum Command {
         LOGIN_USER,
@@ -13,6 +13,7 @@ public class Utils {
         LOGIN_ROOM,
         REGISTER_ROOM,
         WRITE_MESSAGE,
+        GET_MESSAGES,
         QUIT;
 
 
@@ -45,9 +46,15 @@ public class Utils {
         }
     }
 
-    public static int send(String message, BufferedWriter out){
+    public static int send(BufferedWriter out, String ... messages){
         try {
-            out.write(message + delimiter);
+            for (int i = 0; i < messages.length; i++) {
+                out.write(messages[i]);
+                if (i < messages.length - 1) {
+                    out.write(splitter);
+                }
+            }
+            out.write(delimiter);
             out.flush();
             return 0;
         } catch (IOException e) {
@@ -56,7 +63,7 @@ public class Utils {
         return 1;
     } 
     public static int send(Response response, BufferedWriter out){
-        return send(response.toString(), out);
+        return send(out, response.toString());
     }
 
     public static Response getResponse(BufferedReader in){
@@ -69,10 +76,10 @@ public class Utils {
     }
 
     public static String readUntil(BufferedReader in) throws IOException {
-        String response = "";
+        StringBuffer response = new StringBuffer();
         int c;
         while ((c = in.read()) != -1 && ((char)c) != delimiter) {
-            response += ((char) c);
+            response.append((char) c);
         }
         return response.toString();
     }

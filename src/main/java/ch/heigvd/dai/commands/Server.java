@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Callable;
+import java.util.ArrayList;
 
 import ch.heigvd.dai.Utils;
 import ch.heigvd.dai.Users;
@@ -128,6 +129,16 @@ public class Server implements Callable<Integer> {
                                 if (Rooms.addMessage(roomLogin, userLogin, message)) {
                                     Utils.send(Utils.Response.OK, out);
                                 } else {
+                                    Utils.send(Utils.Response.ERROR, out);
+                                }
+                            }
+                            case GET_MESSAGES -> {
+                                if (!checkLogged(userLogin, out) || !checkLogged(roomLogin, out)) {break;}
+                                try {
+                                    int firstLine = Integer.parseInt(parts[1]);
+                                    ArrayList<String> messages = Rooms.getMessages(roomLogin, firstLine);
+                                    Utils.send(out, messages.toArray(new String[0]));
+                                } catch (NumberFormatException e) {
                                     Utils.send(Utils.Response.ERROR, out);
                                 }
                             }

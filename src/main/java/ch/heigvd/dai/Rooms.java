@@ -1,6 +1,8 @@
 package ch.heigvd.dai;
 
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 
 public class Rooms {
@@ -64,5 +66,24 @@ public class Rooms {
             System.out.println("Impossible d'écrire dans la salle :" + e.toString());
             return false;
         }
+    }
+
+    public static ArrayList<String> getMessages(String roomName, int fisrtLine) {
+        ArrayList<String> message = new ArrayList<>();
+        try (BufferedReader roomReader = new BufferedReader(new FileReader(getRoomPath(roomName)));){
+            String line;
+            roomReader.readLine(); // skip password
+            int i = 0;
+            while ((line = roomReader.readLine()) != null) {
+                if (i >= fisrtLine) {
+                    message.add(line);
+                }
+                i++;
+            }
+        } catch (Exception e) {
+            System.out.println("Impossible de lire les messages de la salle :" + e.toString());
+            return null;
+        }
+        return message;
     }
 }
