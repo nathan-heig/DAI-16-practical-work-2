@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import ch.heigvd.dai.ClientHandler;
 import ch.heigvd.dai.Utils;
 import picocli.CommandLine;
 
@@ -27,7 +28,7 @@ public class Client implements Callable<Integer> {
     private static BufferedWriter out;
 
     private static Boolean isGoodRep(String rep){
-        return rep.equals(Server.Response.OK.toString());
+        return rep.equals(ClientHandler.Response.OK.toString());
     }
     private static String getErrorMessage(String rep){
         return rep.split(Utils.splitter,2)[1];
@@ -103,7 +104,7 @@ public class Client implements Callable<Integer> {
                     return 0;
                 }
             }
-            if (response.equals(Server.Response.OK.toString())) {
+            if (isGoodRep(response)) {
                 System.out.println("Vous êtes connecté");
                 break;
             }
@@ -148,7 +149,7 @@ public class Client implements Callable<Integer> {
                     Utils.send(out, Utils.Command.GET_MESSAGES.toString(),String.valueOf(messages.size()));
                     response = Utils.getResponse(in);
                     System.out.println(response);
-                    response = Server.Response.OK.toString();
+                    response = ClientHandler.Response.OK.toString();
                 }
                 case 3 -> {
                     Utils.send(out, Utils.Command.QUIT.toString());
