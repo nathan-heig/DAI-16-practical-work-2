@@ -21,3 +21,129 @@ Chaque ROOM est définie par un nom et un mot de passe permettant d'y accéder.\
 Lorsqu'un client rejoins une ROOM, il peut alors soit envoyer des messages, soit demander de recevoir les messages ayant été écrits dans la ROOM 
 ou encore un historique complet des discussions de cette ROOM. \
 Le client peut quitter la ROOM quand il le souhaite.
+
+
+## Messages
+
+### Première serie de commande :
+### Login
+Le client se login au serveur
+
+#### Request
+
+```text
+1
+```
+#### Response
+1. `nom :` : le est client prié d'indiquer son nom.\
+2. `mdp :` : le est client prié d'entrer son mot de passe.\
+
+- `ERROR <code>` : une erreur est apparue. Le code d'erreur peut valloir 1 ou 2 :\
+(1) : le nom entré n'existe pas\
+  (2) : le mot de passe est incorrect\
+
+
+### Register
+Le client se register au serveur
+
+#### Request
+```text
+2
+```
+#### Response
+1. `nom :` : le est client prié d'indiquer le nom voulu.\
+2. `mdp :` : le est client prié de créer un nouveau mot de passe.\
+
+- `ERROR` : une erreur apparaît si le nom entré existe déjà
+
+
+### Déconnexion
+Le client se déconnecte
+
+#### Request
+```text
+3
+```
+#### Response
+None.
+
+
+
+### Deuxième serie de commande :
+### Connexion ROOM
+Le client se connecte à une ROOM
+
+#### Request
+
+```text
+1
+```
+#### Response
+1. `nom :` : le est client prié d'indiquer le nom de la ROOM.\
+2. `mdp :` : le est client prié d'entrer le mot de passe de la ROOM.\
+
+- `ERROR <code>` : une erreur est apparue. Le code d'erreur peut valloir 1 ou 2 :\
+  (1) : le nom entré ne correspond à aucune ROOM\
+  (2) : le mot de passe est incorrect\
+
+
+### Création ROOM
+Le client crée une ROOM
+
+#### Request
+```text
+2
+```
+#### Response
+1. `nom :` : le est client prié d'indiquer le nom de la ROOM.\
+2. `mdp :` : le est client prié de créer un nouveau mot de passe.\
+
+- `ERROR` : une erreur apparaît si le nom entré existe déjà
+
+
+### Déconnexion
+Le client se déconnecte
+
+#### Request
+```text
+3
+```
+#### Response
+None.
+
+
+### Troisième serie de commande :
+### Ecriture de message
+Le client écrit un message dans une ROOM
+
+#### Request
+
+```text
+1
+```
+#### Response
+- None.
+- `ERROR <code>` : une erreur est apparue car le message ne s'est pas envoyé correctement.
+
+
+### Lecture de message
+Le client lit un message dans une ROOM
+
+#### Request
+```text
+2
+```
+#### Response
+- Le serveur envoie au client les messages écrits sur la ROOM.
+- `ERROR` : une erreur apparaît car il y a eu un problème lors de la lecture d'un message.
+
+
+### Déconnexion de la ROOM
+Le client se déconnecte de la ROOM
+
+#### Request
+```text
+3
+```
+#### Response
+None.
