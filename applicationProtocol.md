@@ -1,10 +1,10 @@
 # THE "ROOM MESSENGER" PROTOCOL
 
-## Overview
+## Section 1 - Overview
 
 Le "ROOM messenger" protocol est un protocol permettant une discussion entre un nombre indéfini de personnes au travers de ROOMS.
 
-## Transport protocol
+## Section 2 - Transport protocol
 
 Ce protocol utilise TCP pour la communication.\
 L'adresse IP connectée par défaut est "localhost", mais chaque client peut utiliser une autre adresse si il le souhaite.\
@@ -23,7 +23,7 @@ ou encore un historique complet des discussions de cette ROOM. \
 Le client peut quitter la ROOM quand il le souhaite.
 
 
-## Messages
+## Section 3 - Messages
 
 ### Première serie de commande :
 ### Login
@@ -122,7 +122,7 @@ Le client écrit un message dans une ROOM
 1
 ```
 #### Response
-- None.
+- `Message :` : le client est prié d'entrée son message.
 - `ERROR <code>` : une erreur est apparue car le message ne s'est pas envoyé correctement.
 
 
@@ -147,3 +147,21 @@ Le client se déconnecte de la ROOM
 ```
 #### Response
 None.
+
+## Section 4 - Examples
+
+### Exemple première serie de commande :
+
+![Serie 1 example](./images/DAI_Serie1.png)
+
+### Exemple deuxième serie de commande :
+
+![Serie 2 example](./images/DAI_Serie2.png)
+
+### Exemple troisième serie de commande :
+
+![Serie 3 example](./images/DAI_Serie3.png)
+
+### Exemple discussion entre 2 clients :
+
+![Discuss example](./images/DAI_2Clients.png)
