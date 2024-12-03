@@ -2,6 +2,7 @@ package ch.heigvd.dai.commands;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import ch.heigvd.dai.Utils;
@@ -39,7 +40,7 @@ public class Client implements Callable<Integer> {
         System.out.print("Entrez le mot de passe : ");
         char[] password = System.console().readPassword();    
         
-        Utils.send(command + " " + pseudo + " " + new String(password), out);
+        Utils.send(out, command + " " + pseudo + " " + new String(password));
         return Utils.getResponse(in);
     }
 
@@ -55,14 +56,14 @@ public class Client implements Callable<Integer> {
         String name = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
         String password = System.console().readLine();
-        Utils.send(command + " " + name + " " + password, out);
+        Utils.send(out, command + " " + name + " " + password);
         return Utils.getResponse(in);
     }
 
     private static Utils.Response sendMessage(){
         System.out.print("Entrez le message : ");
         String message = System.console().readLine();
-        Utils.send(Utils.Command.WRITE_MESSAGE + " " + message, out);
+        Utils.send(out, Utils.Command.WRITE_MESSAGE + " " + message);
         return Utils.getResponse(in);
     }
     
@@ -90,7 +91,7 @@ public class Client implements Callable<Integer> {
                     response = registerUser();
                 }
                 case 3 -> {
-                    Utils.send(Utils.Command.QUIT.toString(), out);
+                    Utils.send(out, Utils.Command.QUIT.toString());
                     return 0;
                 }
             }
@@ -111,7 +112,7 @@ public class Client implements Callable<Integer> {
                     response = registerRoom();
                 }
                 case 3 -> {
-                    Utils.send(Utils.Command.QUIT.toString(), out);
+                    Utils.send(out, Utils.Command.QUIT.toString());
                     return 0;
                 }
             }
@@ -129,7 +130,7 @@ public class Client implements Callable<Integer> {
                     response = sendMessage();
                 }
                 case 2 -> {
-                    Utils.send(Utils.Command.QUIT.toString(), out);
+                    Utils.send(out, Utils.Command.QUIT.toString());
                     return 0;
                 }
             }
