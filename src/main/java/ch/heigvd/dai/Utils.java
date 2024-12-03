@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Utils {
 
-    public static final String splitter = " ";
+    public static final String splitter = "\n";
     public static final char delimiter = '\u0004';
 
     public static enum Command {
@@ -20,25 +20,6 @@ public class Utils {
         public static Command fromString(String command){
             try {
                 return Command.valueOf(command);
-            } catch (Exception e) {
-                System.out.println(e.toString());
-            }
-            return null;
-        }
-    }
-    public static enum Response {
-        OK,
-        CLIENT_NOT_LOGGED,
-        INVALID_LOGIN,
-        INVALID_ROOM_NAME,
-        INVALID_PASSWORD,
-        USER_ALREADY_EXISTS,
-        ROOM_ALREADY_EXISTS,
-        ERROR;
-
-        public static Response fromString(String response){
-            try {
-                return Response.valueOf(response);
             } catch (Exception e) {
                 System.out.println(e.toString());
             }
@@ -62,13 +43,10 @@ public class Utils {
         }
         return 1;
     } 
-    public static int send(Response response, BufferedWriter out){
-        return send(out, response.toString());
-    }
 
-    public static Response getResponse(BufferedReader in){
+    public static String getResponse(BufferedReader in){
         try {
-            return Response.fromString(readUntil(in));
+            return readUntil(in);
         } catch (IOException e) {
             System.out.println(e.toString());
         }

@@ -20,16 +20,21 @@ public class Server implements Callable<Integer> {
     private final int PORT = 1234;
     private static Users users = new Users().loadUsers();
 
-    private void disconnectClient(Socket socket) {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static enum Response {
+        OK,
+        ERROR;
     }
+
+    private static void goodResponse(BufferedWriter out) {
+        Utils.send(out, Response.OK.toString());
+    }
+    private static void badResponse(BufferedWriter out, String message) {
+        Utils.send(out, Response.ERROR.toString(), message);
+    }
+
     private Boolean checkLogged(String Login, BufferedWriter out) {
         if (Login == null) {
-            Utils.send(Utils.Response.CLIENT_NOT_LOGGED, out);
+            badResponse(out, "Vous n'êtes pas connecté");
             return false;
         }
         return true;
@@ -54,8 +59,6 @@ public class Server implements Callable<Integer> {
                         
                         Utils.Command command = Utils.Command.fromString(parts[0]);
                         if (command == null) {
-                            System.out.println("Commande inconnue : " + parts[0]);
-                            disconnectClient(clientSocket);
                             break;
                         }
                         
@@ -64,27 +67,29 @@ public class Server implements Callable<Integer> {
                                 String[] credentials = parts[1].split(Utils.splitter, 2);
                                 String login = credentials[0];
                                 String password = credentials[1];
+                                
                                 if (users.containsKey(login)) {
                                     if (users.get(login).equals(password)) {
-                                        Utils.send(Utils.Response.OK, out);
+                                        goodResponse(out);
                                         userLogin = login;
                                     }
                                     else {
-                                        Utils.send(Utils.Response.INVALID_PASSWORD, out);
+                                        badResponse(out, "Invalid password");
                                     }
                                 } else {
-                                    Utils.send(Utils.Response.INVALID_LOGIN, out);
+                                    badResponse(out, "Invalid login");
                                 }
                             }
                             case REGISTER_USER -> {
                                 String[] credentials = parts[1].split(Utils.splitter, 2);
                                 String login = credentials[0];
                                 String password = credentials[1];
+                                
                                 if (users.containsKey(login)) {
-                                    Utils.send(Utils.Response.USER_ALREADY_EXISTS, out);
+                                    badResponse(out, "User already exists");
                                 } else {
                                     users.put(login, password);
-                                    Utils.send(Utils.Response.OK, out);
+                                    goodResponse(out);
                                     userLogin = login;
                                 }
                             }
@@ -94,42 +99,41 @@ public class Server implements Callable<Integer> {
                                 String roomName = roomData[0];
                                 String roomPassword = roomData[1];
                                 
-                                if (Rooms.exist(roomName))
-                                    Utils.send(Utils.Response.ROOM_ALREADY_EXISTS, out);
-                                else
+                                if (Rooms.exist(roomName)){
+                                    badResponse(out, "Room already exists");
+                                } else {
                                     if (Rooms.createRoom(roomName, roomPassword, userLogin)){
-                                        Utils.send(Utils.Response.OK, out);
+                                        goodResponse(out);
                                         roomLogin = roomName;
-                                    } else
-                                        Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                                    } else{
+                                        badResponse(out, "Impossible de créer la salle");
+                                    }
+                                }
                             }
                             case LOGIN_ROOM -> {
                                 if (!checkLogged(userLogin, out)) {break;}
                                 String[] roomData = parts[1].split(Utils.splitter, 2);
                                 String roomName = roomData[0];
                                 String roomPassword = roomData[1];
+                                
                                 if (Rooms.exist(roomName)) {
-                                    try (BufferedReader roomReader = new BufferedReader(new FileReader(Rooms.roomLocation + "/" + roomName))) {
-                                        if (roomPassword.equals(roomReader.readLine())) {
-                                            Utils.send(Utils.Response.OK, out);
-                                            roomLogin = roomName;
-                                        } else {
-                                            Utils.send(Utils.Response.INVALID_PASSWORD, out);
-                                        }
-                                    } catch (IOException e) {
-                                        Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                                    if (Rooms.checkPassword(roomName, roomPassword)) {
+                                        goodResponse(out);
+                                        roomLogin = roomName;
+                                    } else {
+                                        badResponse(out, "Invalid password");
                                     }
                                 } else {
-                                    Utils.send(Utils.Response.INVALID_ROOM_NAME, out);
+                                    badResponse(out, "Invalid room name");
                                 }
                             }
                             case WRITE_MESSAGE -> {
                                 if (!checkLogged(userLogin, out) || !checkLogged(roomLogin, out)) {break;}
                                 String message = parts[1];
                                 if (Rooms.addMessage(roomLogin, userLogin, message)) {
-                                    Utils.send(Utils.Response.OK, out);
+                                    goodResponse(out);
                                 } else {
-                                    Utils.send(Utils.Response.ERROR, out);
+                                    badResponse(out, "Impossible d'ajouter le message");
                                 }
                             }
                             case GET_MESSAGES -> {
@@ -139,7 +143,7 @@ public class Server implements Callable<Integer> {
                                     ArrayList<String> messages = Rooms.getMessages(roomLogin, firstLine);
                                     Utils.send(out, messages.toArray(new String[0]));
                                 } catch (NumberFormatException e) {
-                                    Utils.send(Utils.Response.ERROR, out);
+                                    badResponse(out, "Invalid line number");
                                 }
                             }
                             case QUIT -> {

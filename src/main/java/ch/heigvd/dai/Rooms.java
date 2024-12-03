@@ -1,13 +1,16 @@
 package ch.heigvd.dai;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 public class Rooms {
     public static final String roomLocation = "rooms";
     public static final String splitter = ":";
+    
+    private static String getRoomPath(String roomName) {
+        return roomLocation + "/" + roomName;
+    }
 
     public static String[] getRoomsName() {
         File folder = new File(roomLocation);
@@ -26,9 +29,6 @@ public class Rooms {
             }
         }
         return false;
-    }
-    private static String getRoomPath(String roomName) {
-        return roomLocation + "/" + roomName;
     }
 
     public static Boolean createRoom(String roomName, String roomPassword, String CreatorName) {
