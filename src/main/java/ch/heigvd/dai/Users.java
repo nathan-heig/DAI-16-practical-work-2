@@ -1,16 +1,17 @@
 package ch.heigvd.dai;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Vector;
 
-public class Users extends ArrayList<User> {
+public class Users{
     public static final String userLocation = "users.txt";
+    Vector<User> users = new Vector<User>();
 
     public Users(){
         try (BufferedReader reader = new BufferedReader(new FileReader(userLocation));){    
             String line;
             while ((line = reader.readLine()) != null) {
-                super.add(User.fromString(line));
+                users.add(User.fromString(line));
             }
         } catch (FileNotFoundException e){
             System.out.println("Fichier des utilisateurs introuvable, création d'un nouveau fichier");
@@ -25,7 +26,7 @@ public class Users extends ArrayList<User> {
     }
 
     public User find(String userLogin) {
-        for (User existingUser : this) {
+        for (User existingUser : this.users) {
             if (existingUser.getLogin().equals(userLogin)) {
                 return existingUser;
             }
@@ -33,22 +34,17 @@ public class Users extends ArrayList<User> {
         return null;
     }
 
-    @Override
     public boolean add(User user) {
         if (find(user.getLogin()) != null) {
             return false;
         }
-        if (super.add(user)) {
+        if (users.add(user)) {
             return addUserToFile(user);
         } else {
             return false;
         }
     }
 
-    @Override
-    public boolean remove(Object o) {
-        return false;// on ne peut pas supprimer un utilisateur
-    }
 
     public Boolean addUserToFile(User user) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userLocation, true));){

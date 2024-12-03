@@ -1,11 +1,12 @@
 package ch.heigvd.dai;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Vector;
 
 
-public class Rooms extends ArrayList<Room> {
+public class Rooms {
     public static final String roomLocation = "rooms";
+    Vector<Room> rooms = new Vector<Room>();
 
     public Rooms() {
         File roomFolder = new File(roomLocation);
@@ -16,7 +17,7 @@ public class Rooms extends ArrayList<Room> {
             try (BufferedReader reader = new BufferedReader(new FileReader(roomFile));){
                 String name = roomFile.getName();
                 String password = reader.readLine();
-                super.add(new Room(name, password));
+                rooms.add(new Room(name, password));
             } catch (Exception e) {
                 System.out.println("Impossible de charger la salle :" + e.toString());
             }
@@ -24,7 +25,7 @@ public class Rooms extends ArrayList<Room> {
     }
 
     public Room find(String roomName) {
-        for (Room existingRoom : this) {
+        for (Room existingRoom : this.rooms) {
             if (existingRoom.getName().equals(roomName)) {
                 return existingRoom;
             }
@@ -32,7 +33,6 @@ public class Rooms extends ArrayList<Room> {
         return null;
     }
 
-    @Override
     public boolean add(Room room) {
         // Vérifiez si une salle avec le même nom existe déjà
         if (find(room.getName()) != null) {
@@ -40,16 +40,11 @@ public class Rooms extends ArrayList<Room> {
         }
 
         // Créez la salle si elle n'existe pas déjà
-        if (super.add(room)) {
+        if (rooms.add(room)) {
             return addRoomToFile(room);
         } else {
             return false;
         }
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        return false;// on ne peut pas supprimer une salle
     }
 
     private static Boolean addRoomToFile(Room room) {

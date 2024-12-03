@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import ch.heigvd.dai.Users;
 import ch.heigvd.dai.ClientHandler;
 import ch.heigvd.dai.Rooms;
-import ch.heigvd.dai.User;
 
 import picocli.CommandLine;
 
@@ -27,9 +26,6 @@ public class Server implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        for (User user : users) {
-            System.out.println(user.getLogin());
-        }
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Le serveur est en cours d'exécution sur le port " + PORT);
             ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
