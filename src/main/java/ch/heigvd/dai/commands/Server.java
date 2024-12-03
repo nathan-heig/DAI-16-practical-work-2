@@ -59,7 +59,7 @@ public class Server implements Callable<Integer> {
                         
                         Utils.Command command = Utils.Command.fromString(parts[0]);
                         if (command == null) {
-                            continue;
+                            break;
                         }
                         
                         switch (command) {

@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Utils {
 
-    public static final String splitter = " ";
+    public static final String splitter = "\n";
     public static final char delimiter = '\u0004';
 
     public static enum Command {

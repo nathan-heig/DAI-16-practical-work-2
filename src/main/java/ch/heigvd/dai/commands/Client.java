@@ -2,6 +2,7 @@ package ch.heigvd.dai.commands;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import ch.heigvd.dai.Utils;
@@ -25,6 +26,12 @@ public class Client implements Callable<Integer> {
     private static BufferedReader in;
     private static BufferedWriter out;
 
+    private static Boolean isGoodRep(String rep){
+        return rep.equals(Server.Response.OK.toString());
+    }
+    private static String getErrorMessage(String rep){
+        return rep.split(Utils.splitter,2)[1];
+    }
 
     private static String loginRoom(){
         return login(Utils.Command.LOGIN_ROOM);
@@ -32,17 +39,13 @@ public class Client implements Callable<Integer> {
     private static String loginUser(){
         return login(Utils.Command.LOGIN_USER);
     }
-    private static Boolean isGoodRep(String rep){
-        return rep.equals(Server.Response.OK.toString());
-    }
-
     private static String login(Utils.Command command){
         System.out.print("Entrez le " + command + " : ");
         String pseudo = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
-        char[] password = System.console().readPassword();    
+        String password = System.console().readLine();   
         
-        Utils.send(out, command + " " + pseudo + " " + new String(password));
+        Utils.send(out, command.toString(),pseudo,password);
         return Utils.getResponse(in);
     }
 
@@ -52,24 +55,21 @@ public class Client implements Callable<Integer> {
     private static String registerUser(){
         return register(Utils.Command.REGISTER_USER);
     }
-
     private static String register(Utils.Command command){
         System.out.print("Entrez le nom : ");
         String name = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
         String password = System.console().readLine();
-        Utils.send(out, command + " " + name + " " + password);
+        Utils.send(out, command.toString(),name,password);
         return Utils.getResponse(in);
     }
 
     private static String sendMessage(){
         System.out.print("Entrez le message : ");
         String message = System.console().readLine();
-        Utils.send(out, Utils.Command.WRITE_MESSAGE + " " + message);
+        Utils.send(out, Utils.Command.WRITE_MESSAGE.toString(),message);
         return Utils.getResponse(in);
     }
-    
-
 
     @Override
     public Integer call() throws Exception {
@@ -83,8 +83,14 @@ public class Client implements Callable<Integer> {
         
         String response = null;
         while(true){
+            Integer command;
             System.out.println("1. Se connecter\n2. S'inscrire\n3. Quitter");
-            Integer command = Integer.parseInt(System.console().readLine());
+            try{
+            command = Integer.parseInt(System.console().readLine());
+            } catch (Exception e) {
+                System.out.println("Veuillez entrer un nombre");
+                continue;
+            }
             switch (command) {
                 case 1 -> {
                     response = loginUser();
@@ -101,11 +107,17 @@ public class Client implements Callable<Integer> {
                 System.out.println("Vous êtes connecté");
                 break;
             }
-            System.out.println("Erreur lors de la connexion : " + response);
+            System.out.println(getErrorMessage(response));
         }
         while(true){
+            Integer command;
             System.out.println("1. Se connecter à une salle\n2. Créer une salle\n3. Quitter");
-            Integer command = Integer.parseInt(System.console().readLine());
+            try {
+            command = Integer.parseInt(System.console().readLine());
+            } catch (Exception e) {
+                System.out.println("Veuillez entrer un nombre");
+                continue;
+            }
             switch (command) {
                 case 1 -> {
                     response = loginRoom();
@@ -122,16 +134,23 @@ public class Client implements Callable<Integer> {
                 System.out.println("Vous êtes connecté à une salle");
                 break;
             }
-            System.out.println(response);
+            System.out.println(getErrorMessage(response));
         }
         while(true){
-            System.out.println("1. Envoyer un message\n2. Quitter");
+            ArrayList<String> messages = new ArrayList<>();
+            System.out.println("1. Envoyer un message\n2. getMessages.\n3. Quitter");
             Integer command = Integer.parseInt(System.console().readLine());
             switch (command) {
                 case 1 -> {
                     response = sendMessage();
                 }
                 case 2 -> {
+                    Utils.send(out, Utils.Command.GET_MESSAGES.toString(),String.valueOf(messages.size()));
+                    response = Utils.getResponse(in);
+                    System.out.println(response);
+                    response = Server.Response.OK.toString();
+                }
+                case 3 -> {
                     Utils.send(out, Utils.Command.QUIT.toString());
                     return 0;
                 }
@@ -140,7 +159,7 @@ public class Client implements Callable<Integer> {
                 System.out.println("Message envoyé");
             }
             else {
-                System.out.println(response);
+                System.out.println(getErrorMessage(response));
             }
         }
     }
