@@ -2,6 +2,12 @@ package ch.heigvd.dai;
 
 import java.io.*;
 
+import java.security.*;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import javax.crypto.KeyAgreement;
+import javax.crypto.spec.SecretKeySpec;
+
 public class Utils {
 
     public static final String splitter = "\n";
@@ -27,12 +33,13 @@ public class Utils {
         }
     }
 
-    public static int send(BufferedWriter out, String ... messages){
+    public static int send(BufferedWriter out, SecretKeySpec secretKey, String ... messages){
         try {
+            StringBuffer sb = new StringBuffer();
             for (int i = 0; i < messages.length; i++) {
-                out.write(messages[i]);
+                sb.append(messages[i]);
                 if (i < messages.length - 1) {
-                    out.write(splitter);
+                    sb.append(splitter);
                 }
             }
             out.write(delimiter);
@@ -60,5 +67,25 @@ public class Utils {
             response.append((char) c);
         }
         return response.toString();
+    }
+
+    public static SecretKeySpec doDiffieHellman(BufferedReader in, BufferedWriter out) throws Exception {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DH");
+        keyPairGen.initialize(2048);
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        byte[] publicKeyBytes = keyPair.getPublic().getEncoded();
+        out.write(Base64.getEncoder().encodeToString(publicKeyBytes) + "\n");
+        out.flush();
+
+        String otherPublicKeyStr = in.readLine();
+        byte[] otherPublicKeyBytes = Base64.getDecoder().decode(otherPublicKeyStr);
+        KeyFactory keyFactory = KeyFactory.getInstance("DH");
+        PublicKey otherPublicKey = keyFactory.generatePublic(new X509EncodedKeySpec(otherPublicKeyBytes));
+
+        KeyAgreement keyAgree = KeyAgreement.getInstance("DH");
+        keyAgree.init(keyPair.getPrivate());
+        keyAgree.doPhase(otherPublicKey, true);
+        byte[] sharedSecret = keyAgree.generateSecret();
+        return new SecretKeySpec(sharedSecret, 0, 16, "AES");
     }
 }
