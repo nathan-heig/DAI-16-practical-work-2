@@ -1,89 +1,68 @@
 package ch.heigvd.dai;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Vector;
 
 
 public class Rooms {
     public static final String roomLocation = "rooms";
-    public static final String splitter = ":";
-    
-    private static String getRoomPath(String roomName) {
-        return roomLocation + "/" + roomName;
+    Vector<Room> rooms = new Vector<Room>();
+
+    public Rooms() {
+        File roomFolder = new File(roomLocation);
+        if (!roomFolder.exists()) {
+            roomFolder.mkdir();
+        }
+        for (File roomFile : roomFolder.listFiles()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(roomFile));){
+                String name = roomFile.getName();
+                String password = reader.readLine();
+                rooms.add(new Room(name, password));
+            } catch (Exception e) {
+                System.out.println("Impossible de charger la salle :" + e.toString());
+            }
+        }
     }
 
-    public static String[] getRoomsName() {
-        File folder = new File(roomLocation);
-        if (folder.exists() && folder.isDirectory()) {
-            return folder.list();
+    public Room find(String roomName) {
+        for (Room existingRoom : this.rooms) {
+            if (existingRoom.getName().equals(roomName)) {
+                return existingRoom;
+            }
         }
         return null;
     }
-    public static Boolean exist(String roomName) {
-       String[] rooms = getRoomsName();
-        if (rooms != null) {
-            for (String room : rooms) {
-                if (room.equals(roomName)) {
-                    return true;
-                }
-            }
+
+    public boolean add(Room room) {
+        // Vérifiez si une salle avec le même nom existe déjà
+        if (find(room.getName()) != null) {
+            return false;
         }
-        return false;
+
+        // Créez la salle si elle n'existe pas déjà
+        if (rooms.add(room)) {
+            return addRoomToFile(room);
+        } else {
+            return false;
+        }
     }
 
-    public static Boolean createRoom(String roomName, String roomPassword, String CreatorName) {
-        File room = new File(getRoomPath(roomName));
+    private static Boolean addRoomToFile(Room room) {
+        File roomFile = new File(room.getRoomPath());
         try {
-            room.createNewFile();
-            try (java.io.BufferedWriter writer = new BufferedWriter(new FileWriter(room));){
-                writer.write(roomPassword + splitter + CreatorName + "\n");
+            roomFile.createNewFile();
+            try (java.io.BufferedWriter writer = new BufferedWriter(new FileWriter(roomFile));){
+                writer.write(room.getPassword() + "\n");
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
-                room.delete();
+                roomFile.delete();
             }
         } catch (Exception e) {
             System.out.println("Impossible de créer la salle :" + e.toString());
-            room.delete();
+            roomFile.delete();
+            return false;
         }
         return false;
-    }
-
-    public static Boolean checkPassword(String roomName, String roomPassword) {
-        try (BufferedReader roomReader = new BufferedReader(new FileReader(getRoomPath(roomName)));) {
-            return roomPassword.equals(roomReader.readLine());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static Boolean addMessage(String roomName, String writer, String message) {
-        try (BufferedWriter roomWriter = new BufferedWriter(new FileWriter(getRoomPath(roomName), true))){
-            roomWriter.write(writer + ":" +message + "\n");
-            return true;
-        } catch (Exception e) {
-            System.out.println("Impossible d'écrire dans la salle :" + e.toString());
-            return false;
-        }
-    }
-
-    public static ArrayList<String> getMessages(String roomName, int fisrtLine) {
-        ArrayList<String> message = new ArrayList<>();
-        try (BufferedReader roomReader = new BufferedReader(new FileReader(getRoomPath(roomName)));){
-            String line;
-            roomReader.readLine(); // skip password
-            int i = 0;
-            while ((line = roomReader.readLine()) != null) {
-                if (i >= fisrtLine) {
-                    message.add(line);
-                }
-                i++;
-            }
-        } catch (Exception e) {
-            System.out.println("Impossible de lire les messages de la salle :" + e.toString());
-            return null;
-        }
-        return message;
     }
 }
