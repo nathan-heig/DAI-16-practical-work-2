@@ -44,13 +44,8 @@ public class Utils {
         return 1;
     } 
 
-    public static String getResponse(BufferedReader in){
-        try {
-            return readUntil(in);
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-        return null;
+    public static String getResponse(BufferedReader in) throws IOException {
+        return readUntil(in);
     }
 
     public static String readUntil(BufferedReader in) throws IOException {
