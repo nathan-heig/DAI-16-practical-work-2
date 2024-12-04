@@ -50,6 +50,7 @@ public class ClientHandler implements Runnable{
                 
                 Utils.Command command = Utils.Command.fromString(parts[0]);
                 if (command == null) {
+                    clientSocket.close();
                     break;
                 }
                 
@@ -144,6 +145,7 @@ public class ClientHandler implements Runnable{
                         }
                     }
                     case QUIT -> {
+                        clientSocket.close();
                         break;
                     }
                 }
