@@ -5,11 +5,11 @@ import java.util.Vector;
 
 
 public class Rooms {
-    public static final String roomLocation = "rooms";
+    public static final String roomsLocation = "data/rooms";
     Vector<Room> rooms = new Vector<Room>();
 
     public Rooms() {
-        File roomFolder = new File(roomLocation);
+        File roomFolder = new File(roomsLocation);
         if (!roomFolder.exists()) {
             roomFolder.mkdir();
         }
