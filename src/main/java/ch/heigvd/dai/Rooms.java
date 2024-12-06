@@ -39,7 +39,6 @@ public class Rooms {
             return false;
         }
 
-        // Créez la salle si elle n'existe pas déjà
         if (rooms.add(room)) {
             return addRoomToFile(room);
         } else {
@@ -47,7 +46,7 @@ public class Rooms {
         }
     }
 
-    private static Boolean addRoomToFile(Room room) {
+    private synchronized static Boolean addRoomToFile(Room room) {
         File roomFile = new File(room.getRoomPath());
         try {
             roomFile.createNewFile();
