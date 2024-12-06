@@ -20,12 +20,14 @@ public class Server implements Callable<Integer> {
 
     private final int MAX_THREADS = 10;
 
-    private Users users = new Users();
-    private Rooms rooms = new Rooms();
+    private Users users;
+    private Rooms rooms;
 
 
     @Override
     public Integer call() throws Exception {
+        users = new Users();
+        rooms = new Rooms();
 
         try (ServerSocket serverSocket = new ServerSocket(parent.getPort())) {
             System.out.println("Le serveur est en cours d'exécution sur le port " + parent.getPort());
