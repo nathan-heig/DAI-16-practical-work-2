@@ -22,7 +22,7 @@ Un historique des discussions de chaque ROOM est save afin de pouvoir réaccéde
 | Exemples de commandes                                                              | Utilité                                                            |
 |------------------------------------------------------------------------------------|--------------------------------------------------------------------|
 | java -jar .\target\pratical_work_02-1.0-SNAPSHOT.jar client -p 2345 -a 192.54.97.0 | connexion du client sur le port 2345 avec l'adresse IP 192.54.97.0 |
-| java -jar .\target\pratical_work_01-1.0-SNAPSHOT.jar client                        | connexion du client sur le port 1234 avec l'adresse IP localhost   |
+| java -jar .\target\pratical_work_02-1.0-SNAPSHOT.jar client                        | connexion du client sur le port 1234 avec l'adresse IP localhost   |
 
 Le client peut ensuite lancer plusieurs commandes :
 
@@ -52,9 +52,19 @@ Troisième selection
 
 #### Utilisation avec Docker :
 
-...
+| Exemples de commandes                  | Utilité                            |
+|----------------------------------------|------------------------------------|
+| docker build -t my-app .               | création du docker                 |
+| docker run -p 1234:1234  my-app server | possibilité de lancement du server |
 
 
 ### Comment clone et build le projet ?  
-Pour ce faire, il suffit d'utiliser la commande git clone git@github.com:nathan-heig/DAI-16-practical-work-2.git et le projet sera cloner.  
-Pour build l'application, il faut utiliser la commande ./mvnw package.
+Pour ce faire, il suffit d'utiliser la commande
+```text
+git clone git@github.com:nathan-heig/DAI-16-practical-work-2.git et le projet sera cloner.  
+```
+
+Pour build l'application, il faut utiliser la commande 
+```text
+./mvnw package.
+``` 
