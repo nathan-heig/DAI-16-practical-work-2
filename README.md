@@ -61,8 +61,9 @@ Troisième selection
 ### Comment clone et build le projet ?  
 Pour ce faire, il suffit d'utiliser la commande
 ```text
-git clone git@github.com:nathan-heig/DAI-16-practical-work-2.git et le projet sera cloner.  
+git clone git@github.com:nathan-heig/DAI-16-practical-work-2.git 
 ```
+et le projet sera cloner.
 
 Pour build l'application, il faut utiliser la commande 
 ```text
