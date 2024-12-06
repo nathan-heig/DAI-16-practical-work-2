@@ -5,7 +5,7 @@ FROM openjdk:22
 WORKDIR /app
 
 # Copier le fichier JAR de l'application dans le conteneur
-COPY target/pratical_work_01-1.0-SNAPSHOT.jar app.jar
+COPY target/pratical_work_02-1.0-SNAPSHOT.jar app.jar
 COPY data data
 
 # Définir la commande pour exécuter l'application
