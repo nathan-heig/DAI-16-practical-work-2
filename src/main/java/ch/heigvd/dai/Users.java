@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Vector;
 
 public class Users{
-    public static final String userLocation = "users.txt";
+    public static final String userLocation = "data/users.txt";
     Vector<User> users = new Vector<User>();
 
     public Users(){

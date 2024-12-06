@@ -11,7 +11,7 @@ public class Room {
     private String password;
 
     public String getRoomPath() {
-        return Rooms.roomLocation + "/" + name;
+        return Rooms.roomsLocation + "/" + name;
     }
 
 
