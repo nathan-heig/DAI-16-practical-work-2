@@ -21,10 +21,6 @@ public class Client implements Callable<Integer> {
     private String ipAddr = "localhost";
 
 
-    private static Socket socket;
-    private static BufferedReader in;
-    private static BufferedWriter out;
-
     private static Boolean isGoodRep(String rep){
         return rep.equals(ClientHandler.Response.OK.toString());
     }
@@ -32,13 +28,13 @@ public class Client implements Callable<Integer> {
         return rep.split(Utils.splitter,2)[1];
     }
 
-    private static String loginRoom() throws IOException {
-        return login(Utils.Command.LOGIN_ROOM);
+    private static String loginRoom(BufferedReader in, BufferedWriter out) throws IOException {
+        return login(Utils.Command.LOGIN_ROOM, in, out);
     }
-    private static String loginUser() throws IOException {
-        return login(Utils.Command.LOGIN_USER);
+    private static String loginUser(BufferedReader in, BufferedWriter out) throws IOException {
+        return login(Utils.Command.LOGIN_USER, in, out);
     }
-    private static String login(Utils.Command command) throws IOException {
+    private static String login(Utils.Command command, BufferedReader in, BufferedWriter out) throws IOException {
         System.out.print("Entrez le " + command + " : ");
         String pseudo = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
@@ -48,13 +44,13 @@ public class Client implements Callable<Integer> {
         return Utils.getResponse(in);
     }
 
-    private static String registerRoom() throws IOException {
-        return register(Utils.Command.REGISTER_ROOM);
+    private static String registerRoom(BufferedReader in, BufferedWriter out) throws IOException {
+        return register(Utils.Command.REGISTER_ROOM, in, out);
     }
-    private static String registerUser() throws IOException {
-        return register(Utils.Command.REGISTER_USER);
+    private static String registerUser(BufferedReader in, BufferedWriter out) throws IOException {
+        return register(Utils.Command.REGISTER_USER, in, out);
     }
-    private static String register(Utils.Command command) throws IOException {
+    private static String register(Utils.Command command, BufferedReader in, BufferedWriter out) throws IOException {
         System.out.print("Entrez le nom : ");
         String name = System.console().readLine();
         System.out.print("Entrez le mot de passe : ");
@@ -63,39 +59,19 @@ public class Client implements Callable<Integer> {
         return Utils.getResponse(in);
     }
 
-    private static String sendMessage() throws IOException {
+    private static String sendMessage(BufferedReader in, BufferedWriter out) throws IOException {
         System.out.print("Entrez le message : ");
         String message = System.console().readLine();
         Utils.send(out, Utils.Command.WRITE_MESSAGE.toString(),message);
         return Utils.getResponse(in);
     }
 
-    private static void quit(){
-        Utils.send(out, Utils.Command.QUIT.toString());
-        try {
-            socket.close();
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-        try {
-            out.close();
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-        try {
-            in.close();
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-    }
-
     @Override
     public Integer call() throws Exception {
-        try {
-
-            socket = new Socket(ipAddr, parent.getPort());
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        try (
+            Socket socket = new Socket(ipAddr, parent.getPort());
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));){
             
             
             System.out.println("Bienvenue sur le client de messagerie");
@@ -113,13 +89,12 @@ public class Client implements Callable<Integer> {
                 }
                 switch (command) {
                     case 1 -> {
-                        response = loginUser();
+                        response = loginUser(in,out);
                     }
                     case 2 -> {
-                        response = registerUser();
+                        response = registerUser(in,out);
                     }
                     case 3 -> {
-                        quit();
                         return 0;
                     }
                 }
@@ -140,13 +115,12 @@ public class Client implements Callable<Integer> {
                 }
                 switch (command) {
                     case 1 -> {
-                        response = loginRoom();
+                        response = loginRoom(in,out);
                     }
                     case 2 -> {
-                        response = registerRoom();
+                        response = registerRoom(in,out);
                     }
                     case 3 -> {
-                        quit();
                         return 0;
                     }
                 }
@@ -162,7 +136,7 @@ public class Client implements Callable<Integer> {
                 Integer command = Integer.parseInt(System.console().readLine());
                 switch (command) {
                     case 1 -> {
-                        response = sendMessage();
+                        response = sendMessage(in,out);
                     }
                     case 2 -> {
                         Utils.send(out, Utils.Command.GET_MESSAGES.toString(),String.valueOf(messages.size()));
@@ -171,7 +145,6 @@ public class Client implements Callable<Integer> {
                         response = ClientHandler.Response.OK.toString();
                     }
                     case 3 -> {
-                        quit();
                         return 0;
                     }
                 }
@@ -184,7 +157,6 @@ public class Client implements Callable<Integer> {
             }
         } catch (Exception e) {
             System.out.println(e.toString());
-            quit();
         }
         return 0;
     }
