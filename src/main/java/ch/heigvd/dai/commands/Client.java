@@ -21,8 +21,6 @@ public class Client implements Callable<Integer> {
     private String ipAddr = "localhost";
 
 
-    private final String HOST = ipAddr;
-    private final int PORT = 1234;
     private static Socket socket;
     private static BufferedReader in;
     private static BufferedWriter out;
@@ -76,10 +74,18 @@ public class Client implements Callable<Integer> {
         Utils.send(out, Utils.Command.QUIT.toString());
         try {
             socket.close();
-            in.close();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        try {
             out.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
+        }
+        try {
+            in.close();
+        } catch (IOException e) {
+            System.out.println(e.toString());
         }
     }
 
@@ -87,7 +93,7 @@ public class Client implements Callable<Integer> {
     public Integer call() throws Exception {
         try {
 
-            socket = new Socket(HOST, PORT);
+            socket = new Socket(ipAddr, parent.getPort());
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             
