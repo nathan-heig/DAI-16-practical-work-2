@@ -11,10 +11,16 @@ import picocli.CommandLine;
         },
         scope = CommandLine.ScopeType.INHERIT,
         mixinStandardHelpOptions = true)
-
-
 public class Root {
-        private int port = 1234;
+        
+        @CommandLine.Option(
+                names = {"-p", "--port"},
+                description = "The name of the file in which the secret key used for encryption is stored",
+                required = false,
+                defaultValue = "1234")
+        private int port;
+
+        
 
         public int getPort(){
                 return port;

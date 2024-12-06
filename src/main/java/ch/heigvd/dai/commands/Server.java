@@ -16,8 +16,8 @@ import picocli.CommandLine;
 public class Server implements Callable<Integer> {
     @CommandLine.ParentCommand
     protected Root parent;
+    
 
-    private final int PORT = 1234;
     private final int MAX_THREADS = 10;
 
     private Users users = new Users();
@@ -26,8 +26,9 @@ public class Server implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Le serveur est en cours d'exécution sur le port " + PORT);
+
+        try (ServerSocket serverSocket = new ServerSocket(parent.getPort())) {
+            System.out.println("Le serveur est en cours d'exécution sur le port " + parent.getPort());
             ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
             while (true) {
                 try {
