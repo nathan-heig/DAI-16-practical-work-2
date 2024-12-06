@@ -63,7 +63,7 @@ Pour ce faire, il suffit d'utiliser la commande
 ```text
 git clone git@github.com:nathan-heig/DAI-16-practical-work-2.git 
 ```
-et le projet sera cloner.
+et le projet sera cloné.
 
 Pour build l'application, il faut utiliser la commande 
 ```text
