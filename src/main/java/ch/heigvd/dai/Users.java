@@ -46,7 +46,7 @@ public class Users{
     }
 
 
-    public Boolean addUserToFile(User user) {
+    private synchronized static Boolean addUserToFile(User user) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userLocation, true));){
             writer.write(user.toString() + "\n");
             return true;
