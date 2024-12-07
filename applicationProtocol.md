@@ -152,16 +152,16 @@ QUIT
 
 ### Exemple première serie de commande :
 
-![Serie 1 example](./images/DAI_Serie1.png)
+<img src="./images/DAI_Serie1.png" alt="Serie 1 example" width="400">
 
 ### Exemple deuxième serie de commande :
 
-![Serie 2 example](./images/DAI_Serie2.png)
+<img src="./images/DAI_Serie2.png" alt="Serie 2 example" width="400">
 
 ### Exemple troisième serie de commande :
 
-![Serie 3 example](./images/DAI_Serie3.png)
+<img src="./images/DAI_Serie3.png" alt="Serie 3 example" width="400">
 
 ### Exemple discussion entre 2 clients :
 
-![Discussion example](./images/DAI_2Clients.png)
+<img src="./images/DAI_2Clients.png" alt="Discussion example" width="400">
